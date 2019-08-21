@@ -80,9 +80,9 @@ class Preprocess:
             wclass = node.feature.split(',')
             if wclass[0] != u'BOS/EOS':
                 if wclass[6] == None:
-                    word_class.append((word,wclass[0],wclass[1],wclass[2],""))
+                    word_class.append((word,wclass[0]))
                 else:
-                    word_class.append((word,wclass[0],wclass[1],wclass[2],wclass[6]))
+                    word_class.append((word,wclass[0]))
             node = node.next
         return word_class
 
@@ -110,6 +110,22 @@ class Preprocess:
             if not (w.isalpha()==True  and len(w)==1):
                 nounlist2.append(w)
         return nounlist2
+
+    #ストップワードの除去
+    def stop_word(nounlist):
+        f=open("../data/stop_word.txt")
+        text = f.read()
+        text=text.splitlines()
+        f.close()
+        stopword=[]
+        for w in text:
+            stopword.append(w)
+        nounlist2=[]
+        for n in nounlist:
+            if not n in stopword:
+                nounlist2.append(n)
+        return nounlist2
+        
 #mecabのダウンロード
 class API_download:
     def mecab_download():

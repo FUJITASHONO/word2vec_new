@@ -2,15 +2,23 @@
 class Database:
     def database(model):
         from preprocess import Preprocess,API_download
-        lista=["医療","化学","経済","情報","心理","電気","土木","動物","法","歴史"]
+        import glob
+
+        #docsにテキストの集合が、id2docにテキスト名が入る
         docs=[]
-        for b in lista:
-            for i in range(1,2):
-                f = open("../data/日本語テキスト小/"+str(b)+str(i)+".txt")
-                text=f.read()
-                docs.append(text)
+        id2doc=[]
+        pathlist=glob.glob("../data/comparison_data/*")
+
+        for path in pathlist:
+            f = open(path)
+            text=f.read()
+            f.close()
+            docs.append(text)
+            id2doc.append(path)
+
 
         tagger=API_download.mecab_download()
+        #テキストの下準備
         word_lists=[]
         for doc in docs:
             text=Preprocess.cleaning_text(doc)
@@ -18,5 +26,6 @@ class Database:
             noun_list=Preprocess.noun_extract(word_class)
             noun_list2=Preprocess.noun_squeeze(noun_list,model)
             noun_list3=Preprocess.noun_squeeze2(noun_list2)
-            word_lists.append(noun_list3)
-        return word_lists
+            noun_list4=Preprocess.stop_word(noun_list3)
+            word_lists.append(noun_list4)
+        return word_lists, id2doc

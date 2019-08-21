@@ -1,16 +1,20 @@
-#テキストの集合を単語の集合にし、word2vecに学習させる
+#テキストの集合(docs)があれば、学習できる
 class Train:
 	def train():
 		from gensim.models import word2vec
 		from preprocess import Preprocess,API_download
-		lista=["医療","化学","経済","情報","心理","電気","土木","動物","法","歴史"]
-		docs=[]
-		for b in lista:
-			for i in range(1,4):
-				f = open("../data/日本語テキスト小/"+str(b)+str(i)+".txt")
-				text=f.read()
-				docs.append(text)
+		import glob
 
+		#train_dataから学習に用いるテキストを選択
+		docs=[]
+		pathlist=glob.glob("../data/train_data/*")
+		for path in pathlist:
+			f=open(path)
+			text=f.read()
+			f.close()
+			docs.append(text)
+
+		#テキストの前準備
 		tagger=API_download.mecab_download()
 		word_lists=[]
 		for doc in docs:
@@ -20,5 +24,6 @@ class Train:
 			for word in word_class:
 				word_list.append(word[0])
 			word_lists.append(word_list)
+		#学習をさせ、モデルを作る
 		model = word2vec.Word2Vec(word_lists, size=200,min_count=1,window=5,iter=100)
 		return model

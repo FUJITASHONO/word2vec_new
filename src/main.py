@@ -1,20 +1,35 @@
-class Main:
-	def main(input_text,model,database):
-		from preprocess import Preprocess,API_download
-		from similarity import Most_similarity
-		#文章中の無駄な記号などを削除
-		text=Preprocess.cleaning_text(input_text)
-		#mecabのダウンロード
-		tagger=API_download.mecab_download()
-		#mecabで文章を形態素解析
-		word_class=Preprocess.mecab_list(text,tagger)
-		#名詞だけを抜き出す
-		noun_list=Preprocess.noun_extract(word_class)
-		#word2vecでベクトル化できないものを削除
-		noun_list2=Preprocess.noun_squeeze(noun_list,model)
-		#アルファベット一文字の単語を削除
-		noun_list3=Preprocess.noun_squeeze2(noun_list2)
-		#最も類似度が高い文章のインデックスを抜き出し
-		most_sim_index=Most_similarity.most_similarity(noun_list3,database,model)
+border=
 
-		return most_sim_index
+
+
+#train.pyで学習したword2vecモデルのダウンロード
+from train import Train
+model=Train.train()
+
+#フォルダ上のモデルをダウンロード
+#from gensim.models import Word2Vec
+#model=Word2Vec.load("name.model")
+
+
+#wiki学習済みモデルをダウンロード
+#from gensim.models import KeyedVectors
+#model_dir = '../data/entity_vector.model.bin'
+#model = KeyedVectors.load_word2vec_format(model_dir, binary=True)
+
+#比較する文章のデータベースの作成
+from database import Database
+database,id2doc=Database.database(model)
+
+#対象の文章の読み込み
+import glob
+path=glob.glob("../data/target_data/*")
+path=path[0]
+f = open(path)
+text=f.read()
+f.close()
+
+#入力（対象の文章、判別モデル、文章のデータベース、類似度のしきい値）から出力（類似度がしきい値を超えた似てる文章を降順に）を出す
+from comparison import Comparison
+ind=Comparison.comparison(text,model,database,border)
+for i in ind:
+	print(id2doc[i])

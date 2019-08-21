@@ -1,1 +1,9 @@
-aaaaaaaaaaaa
+main.pyでシステムが動く。
+
+dataのtarget_dataに対象のテキストを、comparison_dataに比較したい文章を、train_dataに学習に用いる文章を入れる。
+
+判定モデルはtrain.pyで学習させるか、フォルダ上のモデルをダウンロードするかを選ぶ。
+(Wikipediaで学習させたモデルを参考までに)
+
+
+srcのmain.pyのborder(類似度のしきい値)を書くと、しきい値を超えた文章のファイルパスが類似度の高い順に出てくる。
